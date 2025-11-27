@@ -1,41 +1,35 @@
+// Ticket.java
 package org.example.train_ticket_system.entity;
 
-import org.example.train_ticket_system.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import java.time.LocalDateTime;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "tickets")
-public class Ticket extends BaseEntity {
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "train_no", referencedColumnName = "trainNo")
-    private Train train;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "start_station_id")
-    private Station startStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "end_station_id")
-    private Station endStation;
+public class Ticket {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false)
-    private LocalDateTime departureTime;
+    private String trainNumber; // 车次
+
+    // 修正：确保为String类型（存储车站名称，如"北京西站"）
+    @Column(nullable = false)
+    private String startStation;
 
     @Column(nullable = false)
-    private LocalDateTime arrivalTime;
+    private String endStation;
 
     @Column(nullable = false)
-    private Double price;
+    private LocalDateTime departureTime; // 发车时间
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seat_type_id")
-    private SeatType seatType;
+    @Column(nullable = false)
+    private LocalDateTime arrivalTime; // 到达时间
 
-    private Integer remainingTickets;
+    private Double price; // 票价
+
+    private Integer remainingTickets; // 余票数量
 }

@@ -1,3 +1,4 @@
+// UserRepository.java (新增)
 package org.example.train_ticket_system.repository;
 
 import org.example.train_ticket_system.entity.User;
@@ -5,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByUsername(String username); // 登录查询用
-    boolean existsByUsername(String username); // 注册查重用
+    Optional<User> findByUsername(String username);
+    boolean existsByUsername(String username);
 }

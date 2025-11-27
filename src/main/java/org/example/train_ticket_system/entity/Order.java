@@ -1,65 +1,134 @@
+// 文件路径：src/main/java/org/example/train_ticket_system/entity/Order.java
 package org.example.train_ticket_system.entity;
 
-import org.example.train_ticket_system.common.BaseEntity;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import java.time.LocalDateTime;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "t_order")
-public class Order extends BaseEntity {
+public class Order {
 
     @Id
-    @Column(length = 30, nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID) // 补充主键生成策略
+    @Column(length = 30)
     private String orderId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "train_no", referencedColumnName = "trainNo")
-    private Train train;
-
-    @Column(nullable = false)
+    private Long userId;
+    private String trainNo;
     private String runDate;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "from_station_id")
-    private Station fromStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "to_station_id")
-    private Station toStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seat_type_id")
-    private SeatType seatType;
-
-    @Column(nullable = false, length = 50)
+    private Long fromStationId;
+    private Long toStationId;
+    private Long seatTypeId;
     private String passengerName;
-
-    @Column(nullable = false, length = 20)
     private String idCard;
-
-    @Column(nullable = false, length = 10)
     private String seatNo;
-
-    @Column(nullable = false)
     private Double price;
-
-    @Column(nullable = false)
     private LocalDateTime orderTime;
+    private String status;
 
-    @Column(nullable = false)
-    private String status; // 待支付/已支付/已取消/已退票
+    // 完整的 setter 方法（确保每个字段都有）
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
-    // 状态常量
-    public static final String STATUS_PENDING = "待支付";
-    public static final String STATUS_PAID = "已支付";
-    public static final String STATUS_CANCELLED = "已取消";
-    public static final String STATUS_REFUNDED = "已退票";
+    public void setTrainNo(String trainNo) {
+        this.trainNo = trainNo;
+    }
+
+    public void setRunDate(String runDate) {
+        this.runDate = runDate;
+    }
+
+    public void setFromStationId(Long fromStationId) {
+        this.fromStationId = fromStationId;
+    }
+
+    public void setToStationId(Long toStationId) {
+        this.toStationId = toStationId;
+    }
+
+    public void setSeatTypeId(Long seatTypeId) {
+        this.seatTypeId = seatTypeId;
+    }
+
+    public void setOrderTime(LocalDateTime orderTime) {
+        this.orderTime = orderTime;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    // 补充 getter 方法（完整）
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public String getTrainNo() {
+        return trainNo;
+    }
+
+    public String getRunDate() {
+        return runDate;
+    }
+
+    public Long getFromStationId() {
+        return fromStationId;
+    }
+
+    public Long getToStationId() {
+        return toStationId;
+    }
+
+    public Long getSeatTypeId() {
+        return seatTypeId;
+    }
+
+    public String getPassengerName() {
+        return passengerName;
+    }
+
+    public void setPassengerName(String passengerName) {
+        this.passengerName = passengerName;
+    }
+
+    public String getIdCard() {
+        return idCard;
+    }
+
+    public void setIdCard(String idCard) {
+        this.idCard = idCard;
+    }
+
+    public String getSeatNo() {
+        return seatNo;
+    }
+
+    public void setSeatNo(String seatNo) {
+        this.seatNo = seatNo;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public LocalDateTime getOrderTime() {
+        return orderTime;
+    }
+
+    public String getStatus() {
+        return status;
+    }
 }
