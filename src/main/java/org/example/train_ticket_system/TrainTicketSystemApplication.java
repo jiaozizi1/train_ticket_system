@@ -1,8 +1,5 @@
 package org.example.train_ticket_system;
 
-import org.example.train_ticket_system.entity.TicketRemain;
-import org.example.train_ticket_system.entity.TicketRemainPK;
-import org.example.train_ticket_system.repository.TicketRemainRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

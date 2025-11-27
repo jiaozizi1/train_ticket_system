@@ -19,19 +19,17 @@ public class TicketController {
     @Autowired
     private TicketRepository ticketRepository;
 
-    // 车票查询页面
     @GetMapping("/search")
     public String showSearchPage() {
         return "ticket-search";
     }
 
-    // 处理查询请求
     @PostMapping("/search")
     public String searchTickets(
             @RequestParam String startStation,
             @RequestParam String endStation,
             Model model) {
-
+        // 修正：确保TicketRepository中存在该方法（或使用@Query自定义查询）
         List<Ticket> tickets = ticketRepository.findByStartStationAndEndStation(startStation, endStation);
         model.addAttribute("tickets", tickets);
         model.addAttribute("startStation", startStation);

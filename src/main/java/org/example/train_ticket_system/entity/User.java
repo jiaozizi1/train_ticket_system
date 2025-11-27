@@ -1,15 +1,15 @@
 package org.example.train_ticket_system.entity;
 
+import org.example.train_ticket_system.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "user") // 对应数据库user表
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@Table(name = "user")
+public class User extends BaseEntity {
 
     @Column(unique = true, nullable = false, length = 50)
     private String username;
@@ -18,5 +18,5 @@ public class User {
     private String password;
 
     @Column(nullable = false, length = 20)
-    private String role; // 存储ROLE_USER/ROLE_ADMIN
+    private String role; // ROLE_USER/ROLE_ADMIN
 }

@@ -1,33 +1,41 @@
 package org.example.train_ticket_system.entity;
 
+import org.example.train_ticket_system.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import java.time.LocalDateTime;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "tickets")
-public class Ticket {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Ticket extends BaseEntity {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "train_no", referencedColumnName = "trainNo")
+    private Train train;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "start_station_id")
+    private Station startStation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "end_station_id")
+    private Station endStation;
 
     @Column(nullable = false)
-    private String trainNumber; // 车次
+    private LocalDateTime departureTime;
 
     @Column(nullable = false)
-    private String startStation; // 出发站
+    private LocalDateTime arrivalTime;
 
     @Column(nullable = false)
-    private String endStation; // 到达站
+    private Double price;
 
-    @Column(nullable = false)
-    private LocalDateTime departureTime; // 发车时间
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seat_type_id")
+    private SeatType seatType;
 
-    @Column(nullable = false)
-    private LocalDateTime arrivalTime; // 到达时间
-
-    private Double price; // 票价
-
-    private Integer remainingTickets; // 余票数量
+    private Integer remainingTickets;
 }

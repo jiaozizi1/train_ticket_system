@@ -1,34 +1,36 @@
 package org.example.train_ticket_system.entity;
 
+import org.example.train_ticket_system.common.BaseEntity;
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "t_train_schedule")
-public class TrainSchedule {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class TrainSchedule extends BaseEntity {
 
-    private String trainNo;
-    private String fromStation;
-    private String toStation;
-    private String startTime;   // 08:00
-    private String endTime;     // 13:36
-    private LocalDate runDate;  // 发车日期 ← 新增！
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "train_no", referencedColumnName = "trainNo")
+    private Train train;
 
-    // 全套 getter/setter（直接用 Lombok 也行，这里手写）
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getTrainNo() { return trainNo; }
-    public void setTrainNo(String trainNo) { this.trainNo = trainNo; }
-    public String getFromStation() { return fromStation; }
-    public void setFromStation(String fromStation) { this.fromStation = fromStation; }
-    public String getToStation() { return toStation; }
-    public void setToStation(String toStation) { this.toStation = toStation; }
-    public String getStartTime() { return startTime; }
-    public void setStartTime(String startTime) { this.startTime = startTime; }
-    public String getEndTime() { return endTime; }
-    public void setEndTime(String endTime) { this.endTime = endTime; }
-    public LocalDate getRunDate() { return runDate; }
-    public void setRunDate(LocalDate runDate) { this.runDate = runDate; }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "from_station_id")
+    private Station fromStation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "to_station_id")
+    private Station toStation;
+
+    @Column(nullable = false)
+    private LocalTime startTime;
+
+    @Column(nullable = false)
+    private LocalTime endTime;
+
+    @Column(nullable = false)
+    private LocalDate runDate;
 }

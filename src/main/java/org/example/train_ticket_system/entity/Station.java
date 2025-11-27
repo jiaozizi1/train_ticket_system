@@ -1,24 +1,20 @@
-// 3. Station.java
 package org.example.train_ticket_system.entity;
 
+import org.example.train_ticket_system.common.BaseEntity;
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "t_station")
-public class Station {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Station extends BaseEntity {
 
     @Column(nullable = false, length = 100)
     private String name;
 
-    private Long cityId;
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public Long getCityId() { return cityId; }
-    public void setCityId(Long cityId) { this.cityId = cityId; }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "city_id")
+    private City city;
 }

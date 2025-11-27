@@ -1,25 +1,29 @@
-// 4. Train.java
 package org.example.train_ticket_system.entity;
 
+import org.example.train_ticket_system.common.BaseEntity;
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "t_train")
-public class Train {
-    @Id
-    @Column(length = 20)
+public class Train extends BaseEntity {
+
+    @Column(unique = true, length = 20, nullable = false)
     private String trainNo;
 
-    private String type;
-    private Long startStationId;
-    private Long endStationId;
+    @Column(nullable = false, length = 20)
+    private String type; // 高铁/动车/普通列车
 
-    public String getTrainNo() { return trainNo; }
-    public void setTrainNo(String trainNo) { this.trainNo = trainNo; }
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
-    public Long getStartStationId() { return startStationId; }
-    public void setStartStationId(Long startStationId) { this.startStationId = startStationId; }
-    public Long getEndStationId() { return endStationId; }
-    public void setEndStationId(Long endStationId) { this.endStationId = endStationId; }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "start_station_id")
+    private Station startStation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "end_station_id")
+    private Station endStation;
+
+    private Integer totalSeats; // 总座位数
 }
