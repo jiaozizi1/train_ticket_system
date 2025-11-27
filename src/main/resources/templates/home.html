@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>火车票系统 - 首页</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="#">火车票预订系统</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link active" href="/home">首页</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ticket/search">车票查询</a></li>
+                <li class="nav-item"><a class="nav-link" href="/user/profile">个人中心</a></li>
+            </ul>
+            <span class="navbar-text me-3" th:text="'当前用户：' + ${#authentication.name}"></span>
+            <a href="/logout" class="btn btn-outline-light">退出登录</a>
+        </div>
+    </div>
+</nav>
+
+<!-- 首页内容 -->
+<div class="container mt-5">
+    <div class="jumbotron bg-light p-5 rounded">
+        <h1 class="display-4">欢迎使用火车票预订系统</h1>
+        <p class="lead">便捷购票，安心出行</p>
+        <hr class="my-4">
+        <a class="btn btn-primary btn-lg" href="/ticket/search" role="button">立即查询车票</a>
+    </div>
+</div>
+</body>
+</html>

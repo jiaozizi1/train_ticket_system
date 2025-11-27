@@ -1,0 +1,18 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<div style="position:fixed; top:10px; right:20px; background:rgba(0,0,0,0.1); padding:10px 20px; border-radius:10px;">
+    欢迎您，<span sec:authentication="name">用户</span>！
+    <a href="/order/my" style="margin:0 10px; color:#007bff;">个人中心</a>
+    <a href="/admin/dashboard" sec:authorize="hasRole('ADMIN')" style="color:#d4380d;">管理员后台</a>
+    <a href="/logout" style="margin-left:20px; color:#666;">退出</a>
+</div>
+<h2>添加新车次（带日期）</h2>
+<form th:action="@{/admin/train/add}" method="post">
+    车次：<input type="text" name="trainNo" required/><br/><br/>
+    出发站：<input type="text" name="from" required/><br/><br/>
+    到达站：<input type="text" name="to" required/><br/><br/>
+    发车时间：<input type="text" name="startTime" placeholder="08:00" required/><br/><br/>
+    到达时间：<input type="text" name="endTime" placeholder="13:36" required/><br/><br/>
+    发车日期：<input type="date" name="runDate" required/><br/><br/>
+    <button type="submit">提交添加</button>
+</form>

@@ -1,0 +1,93 @@
+package org.example.train_ticket_system.controller;
+
+import org.example.train_ticket_system.entity.*;
+import org.example.train_ticket_system.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;  // ← 关键 import
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Controller
+@RequestMapping("/order")
+public class OrderController {
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private TicketRemainRepository ticketRemainRepository;
+
+    // 我的订单
+    @GetMapping("/my")
+    public String myOrders(@AuthenticationPrincipal User loginUser, Model model, RedirectAttributes redirectAttributes) {
+        if (loginUser == null) {
+            redirectAttributes.addFlashAttribute("message", "请先登录！");
+            return "redirect:/login";
+        }
+        List<Order> orders = orderRepository.findByUserId(loginUser.getId());
+        model.addAttribute("orders", orders);
+        return "order/list";
+    }
+
+    // 终极下单方法（防null + 防超卖 + 必须登录）
+    @PostMapping("/create")
+    public String createOrder(
+            @RequestParam String trainNo,
+            @RequestParam String runDate,
+            @RequestParam Long seatTypeId,
+            @RequestParam Long fromStationId,
+            @RequestParam Long toStationId,
+            @AuthenticationPrincipal User loginUser,
+            Model model,
+            RedirectAttributes redirectAttributes) {   // ← 必须加这个参数
+
+        // 防未登录
+        if (loginUser == null) {
+            redirectAttributes.addFlashAttribute("message", "请先登录后购票！");
+            return "redirect:/login";
+        }
+
+        // 构造余票主键
+        TicketRemainPK pk = new TicketRemainPK();
+        pk.setTrainNo(trainNo);
+        pk.setRunDate(runDate);
+        pk.setFromStationId(fromStationId);
+        pk.setToStationId(toStationId);
+        pk.setSeatTypeId(seatTypeId);
+
+        // 查余票
+        TicketRemain remain = ticketRemainRepository.findById(pk)
+                .orElseThrow(() -> new RuntimeException("余票记录不存在"));
+
+        // 防超卖
+        if (remain.getRemain() <= 0) {
+            redirectAttributes.addFlashAttribute("message", "抱歉，余票已售罄！");
+            return "redirect:/train/search";
+        }
+
+        // 扣库存（原子操作）
+        remain.setRemain(remain.getRemain() - 1);
+        ticketRemainRepository.save(remain);
+
+        // 创建订单
+        Order order = new Order();
+        order.setUserId(loginUser.getId());
+        order.setTrainNo(trainNo);
+        order.setRunDate(runDate);
+        order.setSeatTypeId(seatTypeId);
+        order.setFromStationId(fromStationId);
+        order.setToStationId(toStationId);
+        order.setOrderTime(LocalDateTime.now());
+        order.setStatus("已支付");
+
+        orderRepository.save(order);
+
+        model.addAttribute("order", order);
+        return "order/success";
+    }
+}

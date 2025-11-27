@@ -1,0 +1,20 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<div style="position:fixed; top:10px; right:20px; background:rgba(0,0,0,0.1); padding:10px 20px; border-radius:10px;">
+    欢迎您，<span sec:authentication="name">用户</span>！
+    <a href="/order/my" style="margin:0 10px; color:#007bff;">个人中心</a>
+    <a href="/admin/dashboard" sec:authorize="hasRole('ADMIN')" style="color:#d4380d;">管理员后台</a>
+    <a href="/logout" style="margin-left:20px; color:#666;">退出</a>
+</div>
+<!-- order/list.html（我的订单） -->
+<h2>我的订单</h2>
+<table border="1" width="100%">
+    <tr><th>订单号</th><th>车次</th><th>日期</th><th>金额</th><th>状态</th></tr>
+    <tr th:each="o : ${orders}">
+        <td th:text="${o.orderId}"></td>
+        <td th:text="${o.trainNo}"></td>
+        <td th:text="${o.runDate}"></td>
+        <td>¥299</td>
+        <td th:text="${o.status}"></td>
+    </tr>
+</table>

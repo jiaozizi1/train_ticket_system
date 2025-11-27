@@ -1,0 +1,37 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<div style="position:fixed; top:10px; right:20px; background:rgba(0,0,0,0.1); padding:10px 20px; border-radius:10px;">
+    欢迎您，<span sec:authentication="name">用户</span>！
+    <a href="/order/my" style="margin:0 10px; color:#007bff;">个人中心</a>
+    <a href="/admin/dashboard" sec:authorize="hasRole('ADMIN')" style="color:#d4380d;">管理员后台</a>
+    <a href="/logout" style="margin-left:20px; color:#666;">退出</a>
+</div>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>个人中心</title>
+    <style>
+        body {font-family: Arial; background: #f0f2f5; padding:40px;}
+        .box {max-width:900px; margin:0 auto; background:white; padding:40px; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.1);}
+        h1 {text-align:center; color:#333;}
+        .info {font-size:18px; line-height:2; color:#555;}
+        a {color:#007bff; text-decoration:none; font-size:18px;}
+    </style>
+</head>
+<body>
+<div class="box">
+    <h1>个人中心</h1>
+    <div class="info">
+        用户名：<span sec:authentication="name"></span><br/>
+        角色：<span sec:authentication="authorities"></span><br/><br/>
+        <a href="/order/my">我的订单</a> |
+        <a href="/train/search">继续购票</a> |
+        <a href="/admin/dashboard" sec:authorize="hasRole('ADMIN')">管理员后台</a>
+    </div>
+    <hr/>
+    <h2>我的订单记录</h2>
+    <div th:replace="~{order/list :: orderList}"></div>
+</div>
+</body>
+</html>

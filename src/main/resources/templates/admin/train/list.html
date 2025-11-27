@@ -1,0 +1,60 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<div style="position:fixed; top:10px; right:20px; background:rgba(0,0,0,0.1); padding:10px 20px; border-radius:10px;">
+    欢迎您，<span sec:authentication="name">用户</span>！
+    <a href="/order/my" style="margin:0 10px; color:#007bff;">个人中心</a>
+    <a href="/admin/dashboard" sec:authorize="hasRole('ADMIN')" style="color:#d4380d;">管理员后台</a>
+    <a href="/logout" style="margin-left:20px; color:#666;">退出</a>
+</div>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>车次管理</title>
+    <style>
+        body {font-family: Arial; background: #f4f6f9; padding: 20px;}
+        h1 {text-align: center; color: #333;}
+        table {width: 100%; border-collapse: collapse; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.1);}
+        th, td {padding: 15px; text-align: center; border: 1px solid #ddd;}
+        th {background: #2c3e50; color: white;}
+        a {color: #3498db; text-decoration: none;}
+        .add-btn {display: inline-block; padding: 12px 30px; background: #27ae60; color: white; border-radius: 6px; margin: 20px;}
+    </style>
+</head>
+<body>
+
+<h1>车次管理</h1>
+
+<a href="/admin/train/add" class="add-btn">+ 添加新车次</a>
+
+<table>
+    <tr>
+        <th>车次</th>
+        <th>出发站</th>
+        <th>到达站</th>
+        <th>发车时间</th>
+        <th>到达时间</th>
+        <th>发车日期</th>
+        <th>操作</th>
+    </tr>
+    <tr th:each="t : ${trains}">
+        <!-- 关键：改成 fromStation 和 toStation！ -->
+        <td th:text="${t.trainNo}">G1001</td>
+        <td th:text="${t.fromStation}">北京南</td>
+        <td th:text="${t.toStation}">上海虹桥</td>
+        <td th:text="${t.startTime}">08:00</td>
+        <td th:text="${t.endTime}">13:36</td>
+        <td th:text="${t.runDate}">2025-12-01</td>
+        <td>
+            <a href="#">删除</a>
+        </td>
+    </tr>
+</table>
+
+<div style="text-align:center; margin-top:30px;">
+    <a href="/admin/dashboard">← 返回后台首页</a>
+</div>
+
+</body>
+</html>

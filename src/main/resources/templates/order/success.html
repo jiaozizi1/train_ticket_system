@@ -1,0 +1,50 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<div style="position:fixed; top:10px; right:20px; background:rgba(0,0,0,0.1); padding:10px 20px; border-radius:10px;">
+    欢迎您，<span sec:authentication="name">用户</span>！
+    <a href="/order/my" style="margin:0 10px; color:#007bff;">个人中心</a>
+    <a href="/admin/dashboard" sec:authorize="hasRole('ADMIN')" style="color:#d4380d;">管理员后台</a>
+    <a href="/logout" style="margin-left:20px; color:#666;">退出</a>
+</div>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>订票成功</title>
+    <style>
+        body {font-family: Arial; background: #f8f9fa; text-align:center; padding-top:80px;}
+        .box {display:inline-block; background:white; padding:50px 80px; border-radius:20px; box-shadow:0 10px 40px rgba(0,0,0,0.15);}
+        h1 {color:#28a745; font-size:42px;}
+        h2 {margin:20px; color:#333;}
+        a {margin:0 30px; font-size:22px; color:#007bff; text-decoration:none;}
+        a:hover {text-decoration:underline;}
+    </style>
+</head>
+<body>
+<div class="box">
+
+    <h1>恭喜！订票成功！</h1>
+
+    <!-- 真实订单模式（推荐） -->
+    <div th:if="${order != null}">
+        <h2 th:text="'订单号：' + ${order.orderId}">ORD123456789</h2>
+        <h2 th:text="'车次：' + ${order.trainNo} + ' (' + ${order.runDate} + ')'">G1001 (2025-12-01)</h2>
+        <h2>席别：二等座</h2>
+        <h2>金额：¥299.0</h2>
+        <h2 style="color:green;">余票已扣除，订单已入库！</h2>
+    </div>
+
+    <!-- 兼容老版本（防止万一） -->
+    <div th:if="${order == null}">
+        <h2 th:text="'车次：' + ${param.trainNo}">G1001</h2>
+        <h2 th:text="'日期：' + ${param.date}">2025-12-01</h2>
+    </div>
+
+    <br/><br/>
+    <a href="/train/search">再订一张</a> |
+    <a href="/order/my">我的订单</a> |
+    <a href="/admin/dashboard" sec:authorize="hasRole('ADMIN')">管理员后台</a>
+</div>
+</body>
+</html>

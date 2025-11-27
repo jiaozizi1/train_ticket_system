@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>车票查询</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="#">火车票预订系统</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="/home">首页</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/ticket/search">车票查询</a></li>
+                <li class="nav-item"><a class="nav-link" href="/user/profile">个人中心</a></li>
+            </ul>
+            <span class="navbar-text me-3" th:text="'当前用户：' + ${#authentication.name}"></span>
+            <a href="/logout" class="btn btn-outline-light">退出登录</a>
+        </div>
+    </div>
+</nav>
+
+<!-- 查询表单 -->
+<div class="container mt-5">
+    <div class="card p-4">
+        <h3 class="mb-4">车票查询</h3>
+        <form th:action="@{/ticket/search}" method="post">
+            <div class="row mb-3">
+                <div class="col-md-5">
+                    <label class="form-label">出发站</label>
+                    <input type="text" name="startStation" class="form-control" placeholder="如：北京" required>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">到达站</label>
+                    <input type="text" name="endStation" class="form-control" placeholder="如：上海" required>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">查询</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
