@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>支付确认 - 车站售票系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .payment-qr {
+            width: 200px;
+            height: 200px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            border-radius: 8px;
+            position: relative;
+        }
+        .verification-code {
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
+            letter-spacing: 0.5rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <i class="bi bi-train fs-4 me-2"></i>
+            <span>车站售票系统</span>
+        </a>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card p-5">
+                <h3 class="text-center mb-4 fw-bold">
+                    <i class="bi bi-credit-card text-primary me-2"></i>支付确认
+                </h3>
+
+                <!-- 订单信息 -->
+                <div class="alert alert-light mb-4">
+                    <h5 class="mb-2" th:text="${train.trainNumber} + ' ' + ${train.startStation} + ' → ' + ${train.endStation}">G123 北京 → 上海</h5>
+                    <p class="mb-1"><strong>乘车人：</strong><span th:text="${purchaseDTO.realName}">张三</span></p>
+                    <p class="mb-1"><strong>身份证号：</strong><span th:text="${#strings.substring(purchaseDTO.idCard, 0, 6) + '********' + #strings.substring(purchaseDTO.idCard, 14)}">110101********1234</span></p>
+                    <p class="mb-0"><strong>手机号码：</strong><span th:text="${#strings.substring(purchaseDTO.phoneNumber, 0, 3) + '****' + #strings.substring(purchaseDTO.phoneNumber, 7)}">138****1234</span></p>
+                </div>
+
+                <!-- 支付金额 -->
+                <div class="text-center mb-4">
+                    <p class="text-muted mb-1">支付金额</p>
+                    <h2 class="text-primary fw-bold">¥<span th:text="${train.price}">553.00</span></h2>
+                </div>
+
+                <!-- 扫码支付区域 -->
+                <div class="mb-4">
+                    <p class="text-center mb-2">
+                        <i class="bi bi-qr-code-scan me-1"></i>扫码支付验证码
+                    </p>
+                    <div class="payment-qr mb-3">
+                        <div class="verification-code" th:text="${verificationCode}">862541</div>
+                    </div>
+                    <p class="text-center text-muted small">
+                        使用支付宝/微信扫码支付<br>
+                        或输入验证码完成支付
+                    </p>
+                </div>
+
+                <!-- 支付表单 -->
+                <form th:action="@{/tickets/complete-payment}" th:object="${purchaseDTO}" method="post">
+                    <div class="mb-3">
+                        <label for="verifyCode" class="form-label">验证码</label>
+                        <input type="text" id="verifyCode" name="verifyCode"
+                               class="form-control text-center" placeholder="请输入6位验证码"
+                               th:value="${verificationCode}">
+                    </div>
+
+                    <input type="hidden" th:field="*{trainId}">
+                    <input type="hidden" th:field="*{realName}">
+                    <input type="hidden" th:field="*{idCard}">
+                    <input type="hidden" th:field="*{phoneNumber}">
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-check-circle me-2"></i>确认支付
+                        </button>
+                        <a th:href="@{/tickets/buy/{trainId}(trainId=${purchaseDTO.trainId})}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left-circle me-2"></i>返回修改信息
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

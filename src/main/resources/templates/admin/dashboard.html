@@ -1,54 +1,204 @@
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<div style="position:fixed; top:10px; right:20px; background:rgba(0,0,0,0.1); padding:10px 20px; border-radius:10px;">
-    欢迎您，<span sec:authentication="name">用户</span>！
-    <a href="/order/my" style="margin:0 10px; color:#007bff;">个人中心</a>
-    <a href="/admin/dashboard" sec:authorize="hasRole('ADMIN')" style="color:#d4380d;">管理员后台</a>
-    <a href="/logout" style="margin-left:20px; color:#666;">退出</a>
-</div>
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>管理员后台</title>
+    <title>管理后台 - 车站售票系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        body {font-family: Arial; background: #f4f6f9; margin:0;}
-        .header {background: #1e3a8a; color: white; padding: 20px; text-align: center;}
-        .nav {background: #1e40af; padding: 15px;}
-        .nav a {color: white; margin: 0 20px; text-decoration: none; font-size: 18px;}
-        .nav a:hover {text-decoration: underline;}
-        .content {padding: 40px; text-align: center;}
-        .card {display: inline-block; width: 300px; padding: 30px; margin: 20px; background: white; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);}
-        .card a {font-size: 24px; color: #1e40af; text-decoration: none;}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            background-color: #2c3e50;
+            min-height: calc(100vh - 56px);
+            color: white;
+            padding: 20px 0;
+        }
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+        .sidebar-menu a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 10px 20px;
+            display: block;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            color: white;
+            background-color: rgba(255,255,255,0.1);
+            border-left-color: #007bff;
+        }
+        .sidebar-menu i {
+            width: 20px;
+            margin-right: 10px;
+        }
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #007bff 0%, #00c6ff 100%);
+            color: white;
+        }
+        .stat-card.success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+        .stat-card.warning {
+            background: linear-gradient(135deg, #ffc107 0%, #ffdd70 100%);
+            color: #212529;
+        }
+        .stat-card.info {
+            background: linear-gradient(135deg, #17a2b8 0%, #3dd5f3 100%);
+        }
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
-<div class="header">
-    <h1>铁路售票管理系统 - 管理员后台</h1>
-    <p>欢迎您，<span sec:authentication="name">admin</span>！</p>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="/admin/dashboard">
+            <i class="bi bi-gear fs-4 me-2"></i>
+            <span>管理后台</span>
+        </a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" href="/home">
+                <i class="bi bi-person me-1"></i>返回前台
+            </a>
+            <a class="nav-link" href="/logout">
+                <i class="bi bi-box-arrow-right me-1"></i>退出登录
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2 p-0">
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <h5 class="mb-0">功能菜单</h5>
+                </div>
+                <ul class="sidebar-menu">
+                    <li>
+                        <a href="/admin/dashboard" class="active">
+                            <i class="bi bi-speedometer2"></i>控制面板
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/admin/trains">
+                            <i class="bi bi-train"></i>车次管理
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/admin/users">
+                            <i class="bi bi-people"></i>用户管理
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/admin/system-status">
+                            <i class="bi bi-bar-chart"></i>系统状态
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-10 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold">控制面板</h4>
+                <div class="text-muted">欢迎回来，管理员</div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <div class="card stat-card h-100 p-4">
+                        <div class="stat-value" th:text="${totalTrains}">0</div>
+                        <div class="stat-label">运营车次</div>
+                        <i class="bi bi-train position-absolute bottom-3 end-4 fs-3 opacity-25"></i>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card success h-100 p-4">
+                        <div class="stat-value" th:text="${totalUsers}">0</div>
+                        <div class="stat-label">注册用户</div>
+                        <i class="bi bi-people position-absolute bottom-3 end-4 fs-3 opacity-25"></i>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card warning h-100 p-4">
+                        <div class="stat-value" th:text="${totalTickets}">0</div>
+                        <div class="stat-label">已售车票</div>
+                        <i class="bi bi-ticket-detailed position-absolute bottom-3 end-4 fs-3 opacity-25"></i>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card info h-100 p-4">
+                        <div class="stat-value" th:text="${seatUsageRate} + '%'">0%</div>
+                        <div class="stat-label">座位使用率</div>
+                        <i class="bi bi-percent position-absolute bottom-3 end-4 fs-3 opacity-25"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card h-100 p-4">
+                        <h5 class="card-title fw-bold mb-3">
+                            <i class="bi bi-train me-2"></i>车次管理
+                        </h5>
+                        <p class="card-text text-muted mb-4">添加、编辑和删除车次信息，管理列车时刻表</p>
+                        <a href="/admin/trains" class="btn btn-primary">
+                            <i class="bi bi-arrow-right-circle me-2"></i>进入管理
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100 p-4">
+                        <h5 class="card-title fw-bold mb-3">
+                            <i class="bi bi-people me-2"></i>用户管理
+                        </h5>
+                        <p class="card-text text-muted mb-4">查看和管理系统用户，设置用户权限</p>
+                        <a href="/admin/users" class="btn btn-success">
+                            <i class="bi bi-arrow-right-circle me-2"></i>进入管理
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div class="nav">
-    <a href="/admin/dashboard">首页</a>
-    <a href="/admin/train/list">车次管理</a>
-    <a href="/admin/user/list">用户管理</a>
-    <a href="/order/my">订单管理</a>
-    <a href="/logout">退出登录</a>
+<div class="col-md-3">
+    <div class="card stat-card bg-danger h-100 p-4">
+        <div class="stat-value" th:text="${refundRate} + '%'">0%</div>
+        <div class="stat-label">退票率</div>
+        <i class="bi bi-arrow-counterclockwise position-absolute bottom-3 end-4 fs-3 opacity-25"></i>
+    </div>
 </div>
 
-<div class="content">
-    <h2>快捷功能</h2>
-    <div class="card">
-        <a href="/admin/train/list">车次管理</a>
-        <p>增删改查列车信息</p>
-    </div>
-    <div class="card">
-        <a href="/admin/train/add">添加新车次</a>
-        <p>快速发布新列车</p>
-    </div>
-    <div class="card">
-        <a href="/admin/user/list">用户管理</a>
-        <p>查看所有注册用户</p>
-    </div>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

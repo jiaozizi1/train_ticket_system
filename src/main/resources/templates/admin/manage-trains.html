@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>车次管理</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-danger">
+    <div class="container">
+        <a class="navbar-brand" href="/">车站售票系统-管理后台</a>
+        <div class="navbar-nav">
+            <a class="nav-link" href="/admin/dashboard">控制面板</a>
+            <a class="nav-link active" href="/admin/trains">车次管理</a>
+            <a class="nav-link" href="/admin/users">用户管理</a>
+            <a class="nav-link" href="/logout">退出登录</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>车次列表</h4>
+        <a href="/admin/trains/add" class="btn btn-success">添加车次</a>
+    </div>
+
+    <div th:if="${param.success}" class="alert alert-success">
+        车次添加成功！
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th>车次编号</th>
+                <th>出发站</th>
+                <th>到达站</th>
+                <th>发车时间</th>
+                <th>到达时间</th>
+                <th>票价</th>
+                <th>总座位</th>
+                <th>余票</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="train : ${trains}">
+                <td>[[${train.trainNumber}]]</td>
+                <td>[[${train.startStation}]]</td>
+                <td>[[${train.endStation}]]</td>
+                <td>[[${train.departureTime}]]</td>
+                <td>[[${train.arrivalTime}]]</td>
+                <td>¥[[${train.price}]]</td>
+                <td>[[${train.totalSeats}]]</td>
+                <td>[[${train.availableSeats}]]</td>
+                <td>
+                    <a th:href="@{/admin/trains/delete/{id}(id=${train.id})}"
+                       class="btn btn-danger btn-sm"
+                       onclick="return confirm('确定删除该车次吗？')">删除</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

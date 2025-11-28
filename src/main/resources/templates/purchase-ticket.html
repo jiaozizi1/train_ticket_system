@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>车票购买 - 车站售票系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .form-control:focus {
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+            border-color: #007bff;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <i class="bi bi-train fs-4 me-2"></i>
+            <span>车站售票系统</span>
+        </a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" href="/trains">返回车次查询</a>
+            <a class="nav-link" href="/home">个人中心</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card p-5">
+                <h3 class="text-center mb-4 fw-bold">
+                    <i class="bi bi-ticket-detailed text-primary me-2"></i>车票购买
+                </h3>
+
+                <!-- 车次信息 -->
+                <div class="alert alert-light mb-4">
+                    <h5 class="mb-2" th:text="${train.trainNumber} + ' ' + ${train.startStation} + ' → ' + ${train.endStation}">G123 北京 → 上海</h5>
+                    <p class="mb-0 text-muted">
+                        <i class="bi bi-clock me-1"></i>
+                        <span th:text="${train.departureTime}">08:00</span> 发车 |
+                        <span th:text="${train.arrivalTime}">14:00</span> 到达 |
+                        <strong>票价：¥</strong><span th:text="${train.price}">553.00</span>
+                    </p>
+                </div>
+
+                <!-- 全局错误提示（修复后的版本） -->
+                <div th:if="${errorMessage}" class="alert alert-danger">
+                    <i class="bi bi-exclamation-circle me-2"></i>
+                    <span th:text="${errorMessage}">操作失败，请重试</span>
+                </div>
+
+                <!-- 购票表单 -->
+                <form th:action="@{/tickets/purchase}" th:object="${purchaseDTO}" method="post">
+                    <div class="mb-3">
+                        <label for="realName" class="form-label">真实姓名</label>
+                        <input type="text" id="realName" th:field="*{realName}"
+                               class="form-control" placeholder="请输入乘车人真实姓名">
+                        <div th:if="${#fields.hasErrors('realName')}" class="error-message">
+                            <i class="bi bi-exclamation-circle me-1"></i>
+                            <span th:errors="*{realName}">姓名不能为空</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="idCard" class="form-label">身份证号</label>
+                        <input type="text" id="idCard" th:field="*{idCard}"
+                               class="form-control" placeholder="请输入18位身份证号码">
+                        <div th:if="${#fields.hasErrors('idCard')}" class="error-message">
+                            <i class="bi bi-exclamation-circle me-1"></i>
+                            <span th:errors="*{idCard}">身份证号格式不正确</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phoneNumber" class="form-label">手机号码</label>
+                        <input type="tel" id="phoneNumber" th:field="*{phoneNumber}"
+                               class="form-control" placeholder="请输入11位手机号码">
+                        <div th:if="${#fields.hasErrors('phoneNumber')}" class="error-message">
+                            <i class="bi bi-exclamation-circle me-1"></i>
+                            <span th:errors="*{phoneNumber}">手机号格式不正确</span>
+                        </div>
+                    </div>
+
+                    <input type="hidden" th:field="*{trainId}">
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-arrow-right-circle me-2"></i>下一步：支付确认
+                        </button>
+                        <a href="/trains" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left-circle me-2"></i>取消购票
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
