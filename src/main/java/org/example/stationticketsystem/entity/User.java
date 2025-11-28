@@ -29,6 +29,8 @@ public class User {
     @Column(nullable = false)
     private String role;
 
+
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 }

@@ -165,4 +165,48 @@ public class TicketService {
 
         return seatNumber + String.valueOf(seatType);
     }
+
+    // ========== 新增管理员功能方法 ==========
+    /**
+     * 查询所有车票（管理员用）
+     */
+    public List<Ticket> findAllTickets() {
+        return ticketRepository.findAll();
+    }
+
+    /**
+     * 查询所有有效车票
+     */
+    public List<Ticket> findAllActiveTickets() {
+        return ticketRepository.findByStatus("ACTIVE");
+    }
+
+    /**
+     * 查询所有已退车票
+     */
+    public List<Ticket> findAllRefundedTickets() {
+        return ticketRepository.findByStatus("REFUNDED");
+    }
+
+    /**
+     * 保存/更新车票（用于管理员修改状态）
+     */
+    public void saveTicket(Ticket ticket) {
+        ticketRepository.save(ticket);
+    }
+
+    /**
+     * 删除车票（管理员用）
+     */
+    @Transactional
+    public void deleteTicket(Long id) {
+        Ticket ticket = getTicketById(id);
+
+        // 如果删除的是有效车票，恢复余票
+        if ("ACTIVE".equals(ticket.getStatus()) && ticket.getTrain() != null) {
+            trainService.increaseSeats(ticket.getTrain().getId());
+        }
+
+        ticketRepository.deleteById(id);
+    }
 }

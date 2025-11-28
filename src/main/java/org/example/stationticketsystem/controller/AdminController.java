@@ -10,8 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List; // 添加List导入
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
@@ -89,16 +90,22 @@ public class AdminController {
     }
 
     @GetMapping("/users/delete/{id}")
-    public String deleteUser(@PathVariable Long id) {
+    public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
+            // 处理Optional类型
+            User user = userService.findById(id).orElse(null);
+
             // 不允许删除管理员admin
-            User user = userService.findById(id);
             if (user != null && "admin".equals(user.getUsername())) {
-                return "redirect:/admin/users?error=不能删除管理员账号";
+                redirectAttributes.addFlashAttribute("errorMessage", "不能删除管理员账号");
+                return "redirect:/admin/users";
             }
-            userService.deleteUser(id);
+
+            userService.deleteUser(id); // 调用UserService的deleteUser方法
+            redirectAttributes.addFlashAttribute("successMessage", "用户已删除");
+
         } catch (Exception e) {
-            // 忽略删除错误
+            redirectAttributes.addFlashAttribute("errorMessage", "删除失败：" + e.getMessage());
         }
         return "redirect:/admin/users";
     }
@@ -115,5 +122,9 @@ public class AdminController {
         return "admin/system-status";
     }
 
-
+    // 添加管理员首页重定向
+    @GetMapping
+    public String adminHome() {
+        return "redirect:/admin/dashboard";
+    }
 }

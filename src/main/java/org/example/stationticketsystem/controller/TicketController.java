@@ -26,6 +26,7 @@ public class TicketController {
     private final TicketService ticketService;
     private final TrainService trainService;
     private final UserService userService;
+
     @GetMapping("/refund/{ticketId}")
     public String refundTicket(@PathVariable("ticketId") Long ticketId,
                                RedirectAttributes redirectAttributes,
@@ -76,12 +77,12 @@ public class TicketController {
 
         } catch (Exception e) {
             System.err.println("退票错误：" + e.getMessage());
-            e.printStackTrace(); // 打印完整异常堆栈
             redirectAttributes.addFlashAttribute("errorMessage", "退票失败：" + e.getMessage());
         }
 
         return "redirect:/tickets/my-tickets";
     }
+
     // 进入购票表单页面
     @GetMapping("/buy/{trainId}")
     public String showPurchaseForm(@PathVariable Long trainId,
@@ -93,16 +94,19 @@ public class TicketController {
             return "redirect:/trains";
         }
 
+        // 显示最新余票状态
+        Train train = trainOpt.get();
+        model.addAttribute("currentSeats", train.getAvailableSeats());
+
         TicketPurchaseDTO purchaseDTO = new TicketPurchaseDTO();
         purchaseDTO.setTrainId(trainId);
 
-        // 如果有错误参数，传递错误信息
         if (error != null) {
             model.addAttribute("errorMessage", error);
         }
 
         model.addAttribute("purchaseDTO", purchaseDTO);
-        model.addAttribute("train", trainOpt.get());
+        model.addAttribute("train", train);
         return "purchase-ticket";
     }
 
@@ -127,44 +131,11 @@ public class TicketController {
         // 进入支付页面
         model.addAttribute("purchaseDTO", purchaseDTO);
         model.addAttribute("train", trainOpt.get());
-        model.addAttribute("verificationCode", generateVerificationCode()); // 生成验证码
+        model.addAttribute("verificationCode", generateVerificationCode());
         return "payment";
     }
 
     // 完成支付
-
-
-    // 辅助方法：生成验证码
-    private String generateVerificationCode() {
-        return String.format("%06d", (int)(Math.random() * 900000 + 100000));
-    }
-
-    // 辅助方法：身份证号脱敏
-    private String maskIdCard(String idCard) {
-        if (idCard == null || idCard.length() != 18) {
-            return idCard;
-        }
-        return idCard.substring(0, 6) + "********" + idCard.substring(14);
-    }
-
-    // 其他原有方法...
-    @GetMapping("/my-tickets")
-    public String myTickets(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        if (userDetails == null) {
-            return "redirect:/login";
-        }
-
-        try {
-            Optional<User> userOpt = userService.findByUsername(userDetails.getUsername());
-            if (userOpt.isPresent()) {
-                model.addAttribute("tickets", ticketService.getUserTickets(userOpt.get()));
-            }
-            return "my-tickets";
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "my-tickets";
-        }
-    }
     @PostMapping("/complete-payment")
     public String completePayment(@ModelAttribute TicketPurchaseDTO purchaseDTO,
                                   @AuthenticationPrincipal UserDetails userDetails,
@@ -181,7 +152,7 @@ public class TicketController {
             }
 
             Optional<User> userOpt = userService.findByUsername(userDetails.getUsername());
-            Optional<Train> trainOpt = trainService.findById(purchaseDTO.getTrainId());
+            Optional<Train> trainOpt = trainService.findById(purchaseDTO.getTrainId()); // 带锁查询最新车次状态
 
             System.out.println("用户存在：" + userOpt.isPresent());
             System.out.println("车次存在：" + trainOpt.isPresent());
@@ -196,8 +167,14 @@ public class TicketController {
                 return "redirect:/trains";
             }
 
+            // 再次检查余票（防止支付页面停留期间余票售罄）
+            Train train = trainOpt.get();
+            if (train.getAvailableSeats() == null || train.getAvailableSeats() <= 0) {
+                throw new RuntimeException("余票已售罄，请选择其他车次");
+            }
+
             // 创建车票
-            Ticket ticket = ticketService.buyTicket(userOpt.get(), trainOpt.get(), purchaseDTO);
+            Ticket ticket = ticketService.buyTicket(userOpt.get(), train, purchaseDTO);
 
             redirectAttributes.addFlashAttribute("successMessage",
                     "购票成功！车票编号：" + ticket.getTicketNumber() +
@@ -207,12 +184,41 @@ public class TicketController {
             return "redirect:/tickets/my-tickets";
 
         } catch (Exception e) {
-            // 打印详细错误信息
             System.err.println("购票错误：" + e.getMessage());
-            e.printStackTrace();
-
             redirectAttributes.addFlashAttribute("errorMessage", "购票失败：" + e.getMessage());
             return "redirect:/tickets/buy/" + purchaseDTO.getTrainId();
+        }
+    }
+
+    // 辅助方法：生成验证码
+    private String generateVerificationCode() {
+        return String.format("%06d", (int)(Math.random() * 900000 + 100000));
+    }
+
+    // 辅助方法：身份证号脱敏
+    private String maskIdCard(String idCard) {
+        if (idCard == null || idCard.length() != 18) {
+            return idCard;
+        }
+        return idCard.substring(0, 6) + "********" + idCard.substring(14);
+    }
+
+    // 我的车票列表
+    @GetMapping("/my-tickets")
+    public String myTickets(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            Optional<User> userOpt = userService.findByUsername(userDetails.getUsername());
+            if (userOpt.isPresent()) {
+                model.addAttribute("tickets", ticketService.getUserTickets(userOpt.get()));
+            }
+            return "my-tickets";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "my-tickets";
         }
     }
 }
